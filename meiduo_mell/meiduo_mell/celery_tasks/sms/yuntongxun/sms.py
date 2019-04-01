@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from meiduo_mell.libs.yuntongxun.CCPRestSDK import REST
+from celery_tasks.sms.yuntongxun.CCPRestSDK import REST
 import ssl
 
 ssl._create_default_https_context = ssl._create_unverified_context  # 全局取消证书验证
