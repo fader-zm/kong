@@ -28,7 +28,7 @@ SECRET_KEY = 'hkt1(231xd#p5%p#o@*)z3q-r%%tbdapd*_iz90zskp6(18(v2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -42,11 +42,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'rest_framework',  # DRF
+    'corsheaders',  # 解决跨域CORS
     
     'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # 最外层的中间件
+    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -216,3 +219,11 @@ REST_FRAMEWORK = {
 
 
 AUTH_USER_MODEL = 'users.User'
+
+
+# CORS  追加白名单
+CORS_ORIGIN_WHITELIST = (
+    '127.0.0.1:8080',
+    'localhost:8080',
+)
+CORS_ALLOW_CREDENTIALS = True  # 跨域时允许携带cookie
