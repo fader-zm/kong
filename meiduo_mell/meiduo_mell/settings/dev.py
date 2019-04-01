@@ -15,7 +15,7 @@ import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+# 添加系统的导包路径
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 
 
@@ -41,9 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    'rest_framework',
+    'rest_framework',  # DRF
     
-    'meiduo_mell.apps.users.apps.UsersConfig',
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -140,6 +140,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# 配置redis数据库
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",

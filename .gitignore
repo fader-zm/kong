@@ -6,7 +6,7 @@ __pycache__/
 # C extensions
 *.so
 .idea/
-requirements.txt
+log/*.log
 
 
 # Distribution / packaging
