@@ -5,7 +5,6 @@ from rest_framework.response import Response
 import logging
 from rest_framework import status
 
-from celery_tasks.sms.yuntongxun.sms import CCP
 from . import constants
 from celery_tasks.sms import tasks
 

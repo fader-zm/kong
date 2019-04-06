@@ -10,6 +10,6 @@ def sms_send_code(mobile, sms_code):
     :param mobile: 手机号
     :param sms_code: 验证码
     """
-    CCP().send_template_sms(mobile, [sms_code, constants.SMS_CODE_REDIS_EXPIRES//60], 1)
+    CCP().send_template_sms(mobile, [sms_code, constants.SMS_CODE_REDIS_EXPIRES // 60], 1)
 
 

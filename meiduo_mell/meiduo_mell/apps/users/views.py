@@ -15,7 +15,7 @@ class UserView(CreateAPIView):
 
 
 class UsernameCountView(APIView):
-    """判断用户是否已被注册"""
+    """判断用户名是否已被注册"""
     
     def get(self, request, username):
         # 查询user表
@@ -23,6 +23,21 @@ class UsernameCountView(APIView):
         # 包装响应数据
         data = {
             'username': username,
+            'count': count
+        }
+        # 响应
+        return Response(data=data)
+    
+    
+class MobileConutViwe(APIView):
+    """判断手机号是否已经被注册"""
+    
+    def get(self, request, mobile):
+        # 查询user表
+        count = User.objects.filter(mobile=mobile).count()
+        # 包装响应数据
+        data = {
+            'mobile': mobile,
             'count': count
         }
         # 响应
