@@ -224,9 +224,11 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ),
 }
-# JWT的有效期
+
+# JWT
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),  # JWT认证的有效期1天
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',
 }
 
 
@@ -241,3 +243,8 @@ CORS_ORIGIN_WHITELIST = (
     'www.api.meiduo.site:8000'
 )
 CORS_ALLOW_CREDENTIALS = True  # 跨域时允许携带cookie
+
+# 修改默认的认证后端
+AUTHENTICATION_BACKENDS = [
+    'users.utils.UsernameMobileAuthBackend',
+]
