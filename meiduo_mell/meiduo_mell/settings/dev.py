@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'corsheaders',  # 解决跨域CORS
     
     'users.apps.UsersConfig',
+    'oauth.apps.OauthConfig',
+    
 ]
 
 MIDDLEWARE = [
