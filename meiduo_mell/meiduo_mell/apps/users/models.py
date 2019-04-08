@@ -10,6 +10,7 @@ class User(AbstractUser):
     """
     # unique: 数据必须唯一  verbose_name: admin站点显示的别名
     mobile = models.CharField(max_length=11, unique=True, verbose_name='手机号')
+    email_active = models.BooleanField(default=False, verbose_name='邮箱验证状态')  # 用于标识该用户邮箱是否通过验证
     
     class Meta:  # 配置数据库表名及设置模型在admin站点显示的中文名
         db_table = 'tb_users'  # 数据库表名
