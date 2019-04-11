@@ -13,6 +13,9 @@ urlpatterns = [
     # 判断用户名是否已注册
     url(r'^mobiles/(?P<mobile>1[3-9]\d{9})/count/$', views.MobileConutViwe.as_view()),
     # JWT 登录
-    url(r'^authorizations/$', obtain_jwt_token)
+    url(r'^authorizations/$', obtain_jwt_token),
+    
+    # 用户详细信息
+    url(r'^user/$', views.UserDetailViwe.as_view()),
 ]
 

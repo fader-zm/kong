@@ -1,9 +1,10 @@
 from django.shortcuts import render
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .serializers import CreateUserSerializer
+from .serializers import CreateUserSerializer, UserDetailSerializer
 from .models import User
 
 
@@ -14,6 +15,7 @@ class UserView(CreateAPIView):
     serializer_class = CreateUserSerializer
 
 
+# 判断用户名是否已被注册
 class UsernameCountView(APIView):
     """判断用户名是否已被注册"""
     
@@ -27,8 +29,9 @@ class UsernameCountView(APIView):
         }
         # 响应
         return Response(data=data)
-    
-    
+
+
+# 判断手机号是否已经被注册
 class MobileConutViwe(APIView):
     """判断手机号是否已经被注册"""
     
@@ -42,3 +45,22 @@ class MobileConutViwe(APIView):
         }
         # 响应
         return Response(data=data)
+
+
+# 定义用户中心视图类
+class UserDetailViwe(RetrieveAPIView):
+    """用户详细信息接口"""
+    # 登录用户身份认证
+    permission_classes = [IsAuthenticated]
+    # 指定序列化器
+    serializer_class = UserDetailSerializer
+    
+    # 重写get_object方法获取用户详情信息
+    def get_object(self):
+        return self.request.user
+    
+"""
+queryset.get(pk=1)
+ queryset.get(**{pk:1})
+ User.objects.get(id=1)
+"""

@@ -232,8 +232,12 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),  # JWT认证的有效期1天
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',
 }
+# 修改默认的认证后端
+AUTHENTICATION_BACKENDS = [
+    'users.utils.UsernameMobileAuthBackend',
+]
 
-
+# 默认配置项
 AUTH_USER_MODEL = 'users.User'
 
 
@@ -246,7 +250,4 @@ CORS_ORIGIN_WHITELIST = (
 )
 CORS_ALLOW_CREDENTIALS = True  # 跨域时允许携带cookie
 
-# 修改默认的认证后端
-AUTHENTICATION_BACKENDS = [
-    'users.utils.UsernameMobileAuthBackend',
-]
+
