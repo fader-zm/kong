@@ -1,10 +1,10 @@
-from django.shortcuts import render
-from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from rest_framework import status
+from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .serializers import CreateUserSerializer, UserDetailSerializer
+from .serializers import CreateUserSerializer, UserDetailSerializer, EmailSerializer
 from .models import User
 
 
@@ -59,8 +59,42 @@ class UserDetailViwe(RetrieveAPIView):
     def get_object(self):
         return self.request.user
     
-"""
-queryset.get(pk=1)
- queryset.get(**{pk:1})
- User.objects.get(id=1)
-"""
+    """
+    queryset.get(pk=1)
+    queryset.get(**{pk:1})
+    User.objects.get(id=1)
+    """
+
+
+# 更新邮箱 视图类
+class EmailView(UpdateAPIView):
+    """更新邮箱"""
+    # 1. 用户权限认证, 验证用户是否登录
+    permission_classes = [IsAuthenticated]
+    # 2. 指定序列化器
+    serializer_class = EmailSerializer
+    
+    # 3. 重写get_object方法, 获取模型对象
+    def get_object(self):
+        return self.request.user
+
+
+# 邮箱验证
+class VerifyEmailView(APIView):
+    """激活用户邮箱"""
+    
+    def get(self, request):
+        # 1. 获取token参数
+        token = request.query_params.get('token')
+        # 2. 验证token, 提取user
+        if not token:
+            return Response({'message': 'token缺失'}, status=status.HTTP_400_BAD_REQUEST)
+        # 将token解密, 并获取查询对象的user
+        user = User.check_verify_email_token(token)
+        # 3. email_active改为True
+        if not user:
+            return Response({'message': '邮箱激活失败'}, status=status.HTTP_400_BAD_REQUEST)
+        user.email_active = True
+        user.save()
+        # 4. 响应
+        return Response({'message': 'ok'})

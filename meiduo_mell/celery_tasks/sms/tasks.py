@@ -1,9 +1,9 @@
 from .yuntongxun.sms import CCP
 from . import constants
-from celery_tasks.main import app
+from celery_tasks.main import celery_app
 
 
-@app.task(name='sms_send_code')
+@celery_app.task(name='sms_send_code')
 def sms_send_code(mobile, sms_code):
     """
     发送短信的relery异步任务

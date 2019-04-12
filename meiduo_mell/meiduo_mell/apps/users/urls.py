@@ -17,5 +17,12 @@ urlpatterns = [
     
     # 用户详细信息
     url(r'^user/$', views.UserDetailViwe.as_view()),
+    
+    # 更新邮箱
+    url(r'^email/$', views.EmailView.as_view()),
+    
+    # 激活邮箱
+    url(r'^emails/verification/$', views.VerifyEmailView.as_view()),
+
 ]
 

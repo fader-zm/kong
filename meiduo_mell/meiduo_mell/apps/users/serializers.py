@@ -2,6 +2,7 @@ from rest_framework import serializers
 import re
 from django_redis import get_redis_connection
 
+from celery_tasks.email.tasks import send_verify_email
 from .models import User
 
 # 定义序列化器
@@ -105,7 +106,26 @@ class UserDetailSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'mobile', 'email', 'email_active')
         
 
-
+class EmailSerializer(serializers.ModelSerializer):
+    """更新邮箱序列化器"""
+    class Meta:
+        model = User
+        fields = ('id', 'email')
+        extra_kwargs = {
+            'email': {
+                'required': True  # 该字段必须传入参数
+            }
+        }
+    
+    def update(self, instance, validated_data):
+        """重写此方法不是为了修而是借此时机 发送激活邮箱 """
+        instance.email = validated_data.get('email')
+        instance.save()
+        # 将来再次 填写发送邮箱功能
+        # 使用异步任务实现邮件验证链接
+        verify_url = instance.generate_email_verify_url()
+        send_verify_email.delay(instance.email, verify_url)
+        return instance
         
 
 
