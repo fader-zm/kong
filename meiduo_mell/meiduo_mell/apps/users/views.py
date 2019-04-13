@@ -1,12 +1,16 @@
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+from rest_framework.mixins import UpdateModelMixin
 
-from .serializers import CreateUserSerializer, UserDetailSerializer, EmailSerializer
-from .models import User
+from .serializers import CreateUserSerializer, UserDetailSerializer, EmailSerializer, AddressSerializer, \
+    AddressTitleSerializer
+from .models import User, Address
+import rest_framework.request
 
 
 # 定义用户视图类
@@ -101,12 +105,95 @@ class VerifyEmailView(APIView):
         return Response({'message': 'ok'})
     
     
-class AddressViewSet(GenericViewSet):
+class AddressViewSet(UpdateModelMixin, GenericViewSet):
     """收货地址的增删改查 crud"""
     
     # 登录用户认证
     permission_classes = [IsAuthenticated]
     
     # 指定查询集
+    def get_queryset(self):
+        return self.request.user.addresses.filter(is_deleted=False)
     
     # 指定序列化器
+    serializer_class = AddressSerializer
+    
+    def create(self, request):
+        """新增收货地址"""
+        """因为新增收货地址有上限, 因此要重新create方法"""
+        # count = request.user.addresses.all().count()  # 利用一查多
+        count = Address.objects.filter(user=request.user).count()  # 关联过滤查询, 以外键为条件
+        if count >= 20:
+            return Response({'message': '新增收货地址已达到上限'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # 创建序列化器进行反序列化
+        serializer = self.get_serializer(data=request.data)
+        # 调用序列化器is_valied()
+        serializer.is_valid(raise_exception=True)
+        # 调用序列化器save()
+        serializer.save()
+        # 响应
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def list(self, request):
+        """用户收货地址列表数据"""
+        # 获取查询集
+        queryset = self.get_queryset()
+        # 创建序列化器ser
+        serializer = self.get_serializer(queryset, many=True)
+        
+        user = request.user
+        return Response({
+            'user_id': user.id,
+            'default_addresses_id': user.default_address_id,
+            'limit': 20,
+            'addresses': serializer.data,
+        })
+    
+    def destroy(self, request, *args, **kwargs):
+        """删除收货地址"""
+        # 获取要删除的收货地址模型对象
+        address = self.get_object()
+        # 删除该收货地址
+        address.is_deleted = True
+        address.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    # # 表示路径名格式应该为 addresses/{pk}/title/
+    # @action(methods=['put'], detail=True)
+    # def title(self, request, *args, **kwargs):
+    #     """修改地址标题"""
+    #     # 获取要修改的地址模型对象
+    #     addresses = self.get_object()
+    #     # 获取要更改标题
+    #     title = request.data.get('title')
+    #     addresses.title = title
+    #     addresses.save()
+    #     return Response({'title': title})
+
+    # 表示路径名格式应该为 addresses/{pk}/title/
+    @action(methods=['put'], detail=True)
+    def title(self, request, *args, **kwargs):
+        """修改地址标题"""
+        # 获取要修改的地址模型对象
+        addresses = self.get_object()
+        # 创建序列化器进行反序列化
+        serializer = AddressTitleSerializer(instance=addresses, data=request.data)
+        # 调用序列化器的is_valid()
+        serializer.is_valid()
+        # 调用序列化器的save()
+        serializer.save()
+        # 响应
+        return Response(serializer.data)
+    
+    # addresses/{pk}/status   addresses/1/status/
+    @action(methods=['put'], detail=True)
+    def status(self, request, *args, **kwargs):
+        """设置默认收货地址"""
+        # 获取user, 哪个用户
+        user = request.user
+        # 获取收货地址模型对象
+        address = self.get_object()
+        user.default_address = address
+        user.save()
+        return Response({'message': 'OK'})

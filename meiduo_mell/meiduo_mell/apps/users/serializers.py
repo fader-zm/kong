@@ -3,7 +3,7 @@ import re
 from django_redis import get_redis_connection
 
 from celery_tasks.email.tasks import send_verify_email
-from .models import User
+from .models import User, Address
 
 # 定义序列化器
 
@@ -126,6 +126,41 @@ class EmailSerializer(serializers.ModelSerializer):
         verify_url = instance.generate_email_verify_url()
         send_verify_email.delay(instance.email, verify_url)
         return instance
-        
+    
+
+class AddressSerializer(serializers.ModelSerializer):
+    """收货地址序列化器"""
+    # 序列化的字段: ['id', 'receiver', 'title', 'place', 'mobile', 'tel', 'email',
+    # 'province', 'city', 'district', 'province_id', 'city_id', 'district_id']
+    # read_only: 只能用于序列化
+    province = serializers.StringRelatedField(read_only=True)
+    city = serializers.StringRelatedField(read_only=True)
+    district = serializers.StringRelatedField(read_only=True)
+    # required: 该字段在反序列化时必须输入
+    province_id = serializers.IntegerField(label='省ID', required=True)
+    city_id = serializers.IntegerField(label='市ID', required=True)
+    district_id = serializers.IntegerField(label='区ID', required=True)
+    
+    class Meta:
+        model = Address
+        exclude = ('user', 'is_deleted', 'create_time', 'update_time')
+    
+    def validate_mobile(self, value):
+        """验证手机号"""
+        if not re.match(r'^1[3-9]\d{9}$', value):
+            raise serializers.ValidationError('手机号错误')
+        return value
+
+    def create(self, validate_data):
+        """新增收货地址"""
+        # 给谁新增, 怎么新增
+        user = self.context['request'].user  # 获取用户模型对象
+        validate_data['user'] = user  # 将用户模型保存到validate_data字典中
+        return Address.objects.create(**validate_data)
 
 
+class AddressTitleSerializer(serializers.ModelSerializer):
+    """收货地址序列化器"""
+    class Meta:
+        model = Address
+        fields = ('title',)
