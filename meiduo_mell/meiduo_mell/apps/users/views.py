@@ -98,3 +98,7 @@ class VerifyEmailView(APIView):
         user.save()
         # 4. 响应
         return Response({'message': 'ok'})
+    
+    
+# class AddressViewSet():
+#     """收货地址的增删改查 crud"""

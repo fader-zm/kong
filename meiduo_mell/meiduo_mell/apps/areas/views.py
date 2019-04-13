@@ -51,16 +51,15 @@ from .serializers import AreaListSerializer, AreaSerializer
 #     serializer_class = AreaSerializer
 
 
-class AreaViewSet(ReadOnlyModelViewSet):
+class AreaViewSet(CacheResponseMixin, ReadOnlyModelViewSet):
     """使用视图集 查所有(省)和查单一(市, 县(区))"""
 
     # 重写 get_queryset() 方法, 指定查询集
     def get_queryset(self):
         if self.action == 'list':
-            queryset = Area.objects.filter(parent=None)
+            return Area.objects.filter(parent=None)
         else:
-            queryset = Area.objects.all()
-        return queryset
+            return Area.objects.all()
     
     # 重写 get_serializer() 方法, 指定序列化器
     def get_serializer_class(self):
