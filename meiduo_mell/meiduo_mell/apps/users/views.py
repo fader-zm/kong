@@ -3,6 +3,7 @@ from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIVie
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 
 from .serializers import CreateUserSerializer, UserDetailSerializer, EmailSerializer
 from .models import User
@@ -100,5 +101,12 @@ class VerifyEmailView(APIView):
         return Response({'message': 'ok'})
     
     
-# class AddressViewSet():
-#     """收货地址的增删改查 crud"""
+class AddressViewSet(GenericViewSet):
+    """收货地址的增删改查 crud"""
+    
+    # 登录用户认证
+    permission_classes = [IsAuthenticated]
+    
+    # 指定查询集
+    
+    # 指定序列化器
