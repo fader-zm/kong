@@ -16,7 +16,7 @@ import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# 添加系统的导包路径
+# 追加系统的导包路径
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 
 # Quick-start development settings - unsuitable for production
@@ -42,12 +42,14 @@ INSTALLED_APPS = [
     
     'rest_framework',  # DRF
     'corsheaders',  # 解决跨域CORS
+    'ckeditor',  # 富⽂文本编辑器器
+    'ckeditor_uploader',  # 富⽂文本编辑器器上传图⽚片模块
     
-    'users.apps.UsersConfig',
-    'oauth.apps.OauthConfig',
-    'areas.apps.AreasConfig',
-    'goods.apps.GoodsConfig',
-    'contents.apps.ContentsConfig',
+    'users.apps.UsersConfig',  # 用户模关高模块块
+    'oauth.apps.OauthConfig',  # QQ登录模块
+    'areas.apps.AreasConfig',  # 地址模块
+    'goods.apps.GoodsConfig',  # 商品模块
+    'contents.apps.ContentsConfig',  #
 
 ]
 
@@ -259,3 +261,20 @@ EMAIL_HOST_USER = 'zhaomeng1543@163.com'
 EMAIL_HOST_PASSWORD = '124567fib246i'
 # 收件人看到的发件人
 EMAIL_FROM = 'zhaomeng<zhaomeng1543@163.com>'
+
+
+# Django文件存储
+DEFAULT_FILE_STORAGE = 'meiduo_mell.utils.fastdfs.fdfs_storage.FastDFSStorage'
+# FastDFS
+FDFS_BASE_URL = 'http://192.168.142.141:8888/'
+FDFS_CLIENT_CONF = os.path.join(BASE_DIR, 'utils/fastdfs/client.conf')
+
+# 富⽂文本编辑器器ckeditor配置
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',  # ⼯工具条功能
+        'height': 300,  # 编辑器器⾼高度
+        # 'width': 300, # 编辑器器宽
+    },
+}
+CKEDITOR_UPLOAD_PATH = '' # 上传图⽚片保存路路径，使⽤用了了FastDFS，所以此处设为''

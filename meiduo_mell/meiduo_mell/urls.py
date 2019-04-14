@@ -28,4 +28,6 @@ urlpatterns = [
     url(r'^oauth/', include('oauth.urls')),  # QQ第三方登录
     
     url(r'^', include('areas.urls')),  # 省市区查询
+    
+    url(r'^ckeditor/', include('ckeditor_uploader.urls')),  # 富文本编辑器
 ]
