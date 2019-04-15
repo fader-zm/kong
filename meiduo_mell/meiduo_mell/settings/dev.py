@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'corsheaders',  # 解决跨域CORS
     'ckeditor',  # 富⽂文本编辑器器
     'ckeditor_uploader',  # 富⽂文本编辑器器上传图⽚片模块
+    'django_crontab',  # 定时任务
     
     'users.apps.UsersConfig',  # 用户模关高模块块
     'oauth.apps.OauthConfig',  # QQ登录模块
@@ -70,7 +71,8 @@ ROOT_URLCONF = 'meiduo_mell.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # 'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -262,7 +264,6 @@ EMAIL_HOST_PASSWORD = '124567fib246i'
 # 收件人看到的发件人
 EMAIL_FROM = 'zhaomeng<zhaomeng1543@163.com>'
 
-
 # Django文件存储
 DEFAULT_FILE_STORAGE = 'meiduo_mell.utils.fastdfs.fdfs_storage.FastDFSStorage'
 # FastDFS
@@ -277,4 +278,16 @@ CKEDITOR_CONFIGS = {
         # 'width': 300, # 编辑器器宽
     },
 }
-CKEDITOR_UPLOAD_PATH = '' # 上传图⽚片保存路路径，使⽤用了了FastDFS，所以此处设为''
+CKEDITOR_UPLOAD_PATH = ''  # 上传图⽚片保存路路径，使⽤用了了FastDFS，所以此处设为''
+
+# 静态化主⻚页存储路路径
+GENERATED_STATIC_HTML_FILES_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'front_end_pc')
+
+# 定时任务
+CRONJOBS = [
+    # 每5分钟执行一次生成主页静态文件
+    ('*/1 * * * *', 'contents.crons.generate_static_index_html', '>> /home/python/Desktop/code/kong/meiduo_mell/logs/crontab.log')
+]
+
+# 解决crontab中文问题
+CRONTAB_COMMAND_PREFIX = 'LANG_ALL=zh_cn.UTF-8'
